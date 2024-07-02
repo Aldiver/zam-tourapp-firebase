@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "270526120613",
+    "project_id": "zctourapp",
+    "storage_bucket": "zctourapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:270526120613:android:57a3bce58249bf84b8434c",
+        "android_client_info": {
+          "package_name": "com.example.zc_tour_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "270526120613-s6h65ibfkrlq9604503amo7aujcuflge.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmrVA3Zsp24xrvbCefCoqiBReecM8gZU4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "270526120613-s6h65ibfkrlq9604503amo7aujcuflge.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
