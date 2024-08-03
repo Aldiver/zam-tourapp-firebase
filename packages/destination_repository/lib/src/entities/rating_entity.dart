@@ -11,6 +11,13 @@ class RatingEntity {
     required this.rating,
   });
 
+  static final empty = RatingEntity(
+    id: '',
+    destinationId: '',
+    userId: '',
+    rating: 0.0,
+  );
+
   factory RatingEntity.fromDocument(Map<String, dynamic> doc) {
     return RatingEntity(
       id: doc['id'],

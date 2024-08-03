@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:zc_tour_app/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:zc_tour_app/screens/auth/blocs/sign_up/sign_up_bloc.dart';
 import 'package:user_repository/user_repository.dart';
 
@@ -9,6 +8,7 @@ class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _SignUpPageState createState() => _SignUpPageState();
 }
 
@@ -31,16 +31,7 @@ class _SignUpPageState extends State<SignUpPage> {
           setState(() {
             signUpRequired = false;
           });
-          final user = MyUser(
-            userId: '', // Generate or fetch this as needed
-            email: _emailController.text,
-            name: _nameController.text,
-            role: 'user', // Default role
-          );
-          // context.read<AuthenticationBloc>().add(AuthenticationUserChanged(user));
-          // Navigate to the HomeScreen, you can use Navigator.pushReplacement if needed
           Navigator.of(context).pop();
-
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Sign up successful!')));
         } else if (state is SignUpLoading) {

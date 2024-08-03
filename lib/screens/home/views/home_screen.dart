@@ -1,4 +1,3 @@
-import 'package:destination_repository/destination_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ionicons/ionicons.dart';
@@ -12,6 +11,7 @@ import 'package:zc_tour_app/screens/home/bloc/destination_bloc/destination_bloc.
 import 'package:zc_tour_app/utils/weather/bloc/weather_bloc.dart';
 import 'package:zc_tour_app/utils/weather/weather_repository.dart';
 import 'package:user_repository/user_repository.dart';
+import 'package:zc_tour_app/utils/destination_filters.dart';
 
 class HomeScreen extends StatelessWidget {
   final MyUser? user;
@@ -24,10 +24,6 @@ class HomeScreen extends StatelessWidget {
         BlocProvider(
           create: (context) =>
               WeatherBloc(WeatherRepository())..add(FetchWeather()),
-        ),
-        BlocProvider(
-          create: (context) => DestinationBloc(FirebaseDestinationRepo())
-            ..add(FetchDestinations()),
         ),
       ],
       child: Scaffold(
@@ -63,7 +59,22 @@ class HomeScreen extends StatelessWidget {
             if (state is DestinationLoading) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is DestinationSuccess) {
-              final exploreDestinations = state.exploreDestinations;
+              final exploreDestinations =
+                  getExploreDestinations(state.destinations);
+              final nearbyDestinations =
+                  getNearbyDestinations(state.destinations, state.location);
+              final mountainDestinations =
+                  filterDestinationsByTag(state.destinations, 'Mountain');
+              final beachDestinations =
+                  filterDestinationsByTag(state.destinations, 'Beach');
+              final forestDestinations =
+                  filterDestinationsByTag(state.destinations, 'Forest');
+              final cityDestinations =
+                  filterDestinationsByTag(state.destinations, 'City');
+              final foodDestinations =
+                  filterDestinationsByTag(state.destinations, 'Food');
+              final bedsDestinations =
+                  filterDestinationsByTag(state.destinations, 'Beds');
 
               return ListView(
                 physics: const BouncingScrollPhysics(),
@@ -71,7 +82,16 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   const WeatherAndLocation(),
                   const SizedBox(height: 15),
-                  TagsPlaces(state2: state),
+                  TagsPlaces(
+                    state2: state,
+                    mountainDestinations: mountainDestinations,
+                    beachDestinations: beachDestinations,
+                    forestDestinations: forestDestinations,
+                    cityDestinations: cityDestinations,
+                    foodDestinations: foodDestinations,
+                    bedsDestinations: bedsDestinations,
+                    exploreDestinations: exploreDestinations,
+                  ),
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -88,7 +108,11 @@ class HomeScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => TaggedPlaces(destinationsFiltered: exploreDestinations, title: "Explore Places", state2: state),
+                              builder: (context) => TaggedPlaces(
+                                destinationsFiltered: exploreDestinations,
+                                title: "Explore Places",
+                                state2: state,
+                              ),
                             ),
                           );
                         },
@@ -106,14 +130,21 @@ class HomeScreen extends StatelessWidget {
                         "Places Near You",
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
-                      TextButton(onPressed: () {
-                        Navigator.push(
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => TaggedPlaces(destinationsFiltered: state.nearbyDestinations, title: "Places Near You", state2: state),
+                              builder: (context) => TaggedPlaces(
+                                destinationsFiltered: nearbyDestinations,
+                                title: "Places Near You",
+                                state2: state,
+                              ),
                             ),
                           );
-                      }, child: const Text("View All")),
+                        },
+                        child: const Text("View All"),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 10),

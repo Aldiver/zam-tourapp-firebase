@@ -9,6 +9,7 @@ import 'package:zc_tour_app/screens/home/views/home_screen.dart';
 
 import 'screens/auth/blocs/sign_bloc/sign_in_bloc.dart';
 
+// ignore: camel_case_types
 class zc_tour_appView extends StatelessWidget {
   const zc_tour_appView({super.key});
 
@@ -33,9 +34,10 @@ class zc_tour_appView extends StatelessWidget {
                         context.read<AuthenticationBloc>().userRepository),
                   ),
                   BlocProvider(
-                    create: (context) =>
-                        DestinationBloc(FirebaseDestinationRepo())
-                          ..add(FetchDestinations()),
+                    create: (context) => DestinationBloc(
+                      FirebaseDestinationRepo(),
+                      context.read<AuthenticationBloc>(),
+                    )..add(FetchDestinations()),
                   ),
                 ],
                 child: HomeScreen(user: state.user),

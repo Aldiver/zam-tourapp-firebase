@@ -3,6 +3,7 @@ import 'package:zc_tour_app/components/destination_details.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zc_tour_app/components/distance.dart';
 import 'package:zc_tour_app/screens/home/bloc/destination_bloc/destination_bloc.dart';
+import 'package:zc_tour_app/utils/destination_filters.dart';
 
 class NearbyPlaces extends StatelessWidget {
   const NearbyPlaces({super.key});
@@ -11,12 +12,14 @@ class NearbyPlaces extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<DestinationBloc, DestinationState>(
       builder: (context, state) {
+        DestinationBloc destinationBloc = context.read<DestinationBloc>();
         if (state is DestinationLoading) {
           return const Center(child: CircularProgressIndicator());
-        } else if (state is DestinationSuccess &&
-            state.nearbyDestinations.isNotEmpty) {
+        } else if (state is DestinationSuccess) {
+          final nearbyDestinations =
+              getNearbyDestinations(state.destinations, state.location);
           return Column(
-              children: List.generate(state.nearbyDestinations.length, (index) {
+              children: List.generate(nearbyDestinations.length, (index) {
             return Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: SizedBox(
@@ -34,8 +37,9 @@ class NearbyPlaces extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) => DestinationPage(
-                              destination: state.nearbyDestinations[index],
+                              destination: nearbyDestinations[index],
                               state2: state,
+                              destinationBloc: destinationBloc,
                             ),
                           ));
                     },
@@ -46,7 +50,7 @@ class NearbyPlaces extends StatelessWidget {
                           ClipRRect(
                               borderRadius: BorderRadius.circular(12),
                               child: Image.network(
-                                state.nearbyDestinations[index].coverImage,
+                                nearbyDestinations[index].coverImage,
                                 height: double.maxFinite,
                                 width: 130,
                                 fit: BoxFit.cover,
@@ -57,19 +61,19 @@ class NearbyPlaces extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  state.nearbyDestinations[index].name,
+                                  nearbyDestinations[index].name,
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                Text(state.nearbyDestinations[index].address),
+                                Text(nearbyDestinations[index].address),
                                 const SizedBox(height: 10),
                                 // DISTANCE WIDGET
                                 Distance(
                                     currentLoc: state.locationAddress,
-                                    destinationLoc: state
-                                        .nearbyDestinations[index].address),
+                                    destinationLoc:
+                                        nearbyDestinations[index].address),
                                 const Spacer(),
                                 Row(
                                   children: [
@@ -79,7 +83,8 @@ class NearbyPlaces extends StatelessWidget {
                                       size: 14,
                                     ),
                                     Text(
-                                      state.nearbyDestinations[index].aveRating
+                                      nearbyDestinations[index]
+                                          .aveRating
                                           .toString(),
                                       style: const TextStyle(
                                         fontSize: 12,
@@ -94,7 +99,8 @@ class NearbyPlaces extends StatelessWidget {
                                         ),
                                         children: [
                                           TextSpan(
-                                            text: state.nearbyDestinations[index].distance,
+                                            text: nearbyDestinations[index]
+                                                .distance,
                                             style: const TextStyle(
                                               fontSize: 12,
                                               color: Colors.black54,

@@ -1,1 +1,48 @@
-{"hosting":{"source":".","ignore":["firebase.json","**/.*","**/node_modules/**"],"frameworksBackend":{"region":"asia-east1"}},"flutter":{"platforms":{"android":{"default":{"projectId":"zctourapp","appId":"1:270526120613:android:57a3bce58249bf84b8434c","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"zctourapp","configurations":{"android":"1:270526120613:android:57a3bce58249bf84b8434c","web":"1:270526120613:web:9ef0f6831e3a162ab8434c"}}}}}}
+{
+  "hosting": {
+    "source": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "frameworksBackend": {
+      "region": "asia-east1"
+    }
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "zctourapp",
+          "appId": "1:270526120613:android:57a3bce58249bf84b8434c",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "zctourapp",
+          "configurations": {
+            "android": "1:270526120613:android:57a3bce58249bf84b8434c",
+            "web": "1:270526120613:web:9ef0f6831e3a162ab8434c"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run lint"
+      ]
+    }
+  ]
+}

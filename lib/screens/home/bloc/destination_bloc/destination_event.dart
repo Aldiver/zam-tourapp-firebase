@@ -8,3 +8,17 @@ abstract class DestinationEvent extends Equatable {
 }
 
 class FetchDestinations extends DestinationEvent {}
+
+class UpdateDestinationRating extends DestinationEvent {
+  // final Destination destination;
+  final String destinationId;
+  final double rating;
+
+  const UpdateDestinationRating({
+    required this.destinationId,
+    required this.rating,
+  });
+
+  @override
+  List<Object> get props => [destinationId, rating];
+}

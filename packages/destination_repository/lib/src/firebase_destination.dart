@@ -10,10 +10,10 @@ class FirebaseDestinationRepo implements DestinationRepo {
   final menuCollection = FirebaseFirestore.instance.collection('menus');
 
   @override
-  Future<List<Destination>> getDestinations() async {
+  Future<List<Destination>> getDestinations(String userId) async {
     try {
       final destinationDocs = await destinationCollection.get();
-      final ratingDocs = await ratingCollection.get();
+      // final ratingDocs = await ratingCollection.get();
       final menuDocs = await menuCollection.get();
 
       final destinations = destinationDocs.docs
@@ -21,13 +21,13 @@ class FirebaseDestinationRepo implements DestinationRepo {
               Destination.fromEntity(DestinationEntity.fromDocument(e.data())))
           .toList();
 
-      // Handle ratings
-      List<RatingEntity> ratings = [];
-      if (ratingDocs.docs.isNotEmpty) {
-        ratings = ratingDocs.docs
-            .map((e) => RatingEntity.fromDocument(e.data()))
-            .toList();
-      }
+      // // Handle ratings
+      // List<RatingEntity> ratings = [];
+      // if (ratingDocs.docs.isNotEmpty) {
+      //   ratings = ratingDocs.docs
+      //       .map((e) => RatingEntity.fromDocument(e.data()))
+      //       .toList();
+      // }
 
       // Handle menus
       final menus =
@@ -35,26 +35,33 @@ class FirebaseDestinationRepo implements DestinationRepo {
 
       // Map ratings and menus to their respective destinations
       for (var destination in destinations) {
-        if (ratings.isNotEmpty) {
-          destination.userRating = ratings
-                  .where((rating) => rating.destinationId == destination.id)
-                  .map((rating) => rating.rating)
-                  .reduce((a, b) => a + b) /
-              ratings
-                  .where((rating) => rating.destinationId == destination.id)
-                  .length;
-        } else {
-          destination.userRating = 0; // Set default userRating if no ratings
-        }
+        // final destinationRatings = ratings
+        //     .where((rating) => rating.destinationId == destination.id)
+        //     .toList();
+
+        // if (destinationRatings.isNotEmpty) {
+        //   destination.aveRating = destinationRatings
+        //           .map((rating) => rating.rating)
+        //           .reduce((a, b) => a + b) /
+        //       destinationRatings.length;
+        //   destination.rating = destinationRatings.length;
+        // } else {
+        //   destination.aveRating = 0;
+        //   destination.rating = 0;
+        // }
+
+        // Assuming `userId` is available in your context to get `userRating`
+        // final userRating = destinationRatings.firstWhere(
+        //     (rating) => rating.userId == userId,
+        //     orElse: () => RatingEntity.empty);
+        // destination.userRating = userRating.rating;
+        // destination.ratingId = userRating.id;
+        // log("Updated Ratings Kimene ${destination.id} -> ${destination.userRating}");
 
         final matchedMenu = menus.firstWhere(
           (menu) => menu.destinationId == destination.id,
           orElse: () => MenuEntity.empty(),
         );
-
-        // if (matchedMenu.id.isNotEmpty) {
-        //   destination.menu = Menu.fromEntity(matchedMenu);
-        // }
 
         destination.menu = Menu.fromEntity(matchedMenu);
       }
@@ -68,8 +75,17 @@ class FirebaseDestinationRepo implements DestinationRepo {
 
   @override
   Future<void> updateRating(
-      Destination destination, double userRating, String userId) {
-    // TODO: implement updateRating
-    throw UnimplementedError();
+      String destinationId, double userRating, String userId) async {
+    try {
+      String ratingId = '${userId}_$destinationId';
+      await ratingCollection.doc(ratingId).set({
+        'userId': userId,
+        'destinationId': destinationId,
+        'rating': userRating,
+      }, SetOptions(merge: true));
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
   }
 }

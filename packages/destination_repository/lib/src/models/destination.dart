@@ -12,30 +12,31 @@ class Destination {
   bool? isFoodServiceEstablishment;
   Menu? menu;
   double? userRating;
-  double aveRating;
-  int rating;
+  double? aveRating;
+  int? rating;
   String address;
   GeoPoint locationCoords;
   String? distance;
   Map<String, dynamic>? matrix;
-  
-  Destination({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.coverImage,
-    this.images,
-    this.tags,
-    this.isFoodServiceEstablishment,
-    this.menu,
-    this.userRating,
-    required this.aveRating,
-    required this.rating,
-    required this.address,
-    required this.locationCoords,
-    this.distance,
-    this.matrix
-  });
+  String? ratingId;
+
+  Destination(
+      {required this.id,
+      required this.name,
+      required this.description,
+      required this.coverImage,
+      this.images,
+      this.tags,
+      this.isFoodServiceEstablishment,
+      this.menu,
+      this.userRating,
+      this.aveRating,
+      this.rating,
+      required this.address,
+      required this.locationCoords,
+      this.distance,
+      this.matrix,
+      this.ratingId});
 
   static final empty = Destination(
     id: '',
@@ -53,6 +54,7 @@ class Destination {
     locationCoords: const GeoPoint(0.0, 0.0),
     distance: "",
     matrix: {},
+    ratingId: "",
   );
 
   DestinationEntity toEntity() {
@@ -64,8 +66,8 @@ class Destination {
       images: images,
       tags: tags,
       isFoodServiceEstablishment: isFoodServiceEstablishment,
-      aveRating: aveRating,
-      rating: rating,
+      aveRating: aveRating!,
+      rating: rating!,
       address: address,
       locationCoords: locationCoords,
     );

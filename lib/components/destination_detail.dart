@@ -2,31 +2,26 @@ import 'dart:developer';
 
 import 'package:destination_repository/destination_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:zc_tour_app/components/distance.dart';
 import 'package:zc_tour_app/screens/home/bloc/destination_bloc/destination_bloc.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-class DestinationPage extends StatefulWidget {
-  final Destination destination;
-  final DestinationSuccess state2;
-  final DestinationBloc destinationBloc;
+class DestinationDetail extends StatefulWidget {
+  final String destinationId;
 
-  const DestinationPage({
-    super.key,
-    required this.destination,
-    required this.state2,
-    required this.destinationBloc,
-  });
+  const DestinationDetail({super.key, required this.destinationId});
 
   @override
-  State<DestinationPage> createState() => _DestinationPage();
+  State<DestinationDetail> createState() => _DestinationDetailState();
 }
 
-class _DestinationPage extends State<DestinationPage> {
+class _DestinationDetailState extends State<DestinationDetail> {
+  late Destination destination;
   GoogleMapController? mapController; //contrller for Google map
   PolylinePoints polylinePoints = PolylinePoints();
 
@@ -40,16 +35,33 @@ class _DestinationPage extends State<DestinationPage> {
 
   bool isDescriptionExpanded = false;
   late double? distanceInMeters;
+  late String locationAddress;
+  LatLng? stateLocation;
+  DestinationSuccess? currentState;
 
   @override
   void initState() {
+    super.initState();
+    // context.read<DestinationBloc>().add(FetchDestinations());
+
+    context.read<DestinationBloc>().stream.listen((state) {
+      if (state is DestinationSuccess) {
+        setState(() {
+          destination = state.destinations
+              .firstWhere((element) => element.id == widget.destinationId);
+
+          locationAddress = state.locationAddress;
+          currentState = state;
+        });
+      }
+    });
     startLocation = LatLng(
-      widget.state2.location.latitude,
-      widget.state2.location.longitude,
+      currentState!.location.latitude,
+      currentState!.location.longitude,
     );
     endLocation = LatLng(
-      widget.destination.locationCoords.latitude,
-      widget.destination.locationCoords.longitude,
+      destination.locationCoords.latitude,
+      destination.locationCoords.longitude,
     );
 
     markers.add(Marker(
@@ -82,7 +94,7 @@ class _DestinationPage extends State<DestinationPage> {
   }
 
   getDirections() async {
-    final distanceString = widget.destination.distance;
+    final distanceString = destination.distance;
     if (distanceString != null && distanceString.isNotEmpty) {
       final numericDistance =
           double.tryParse(distanceString.replaceAll(RegExp(r'[^0-9.]'), ''));
@@ -170,7 +182,7 @@ class _DestinationPage extends State<DestinationPage> {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
-        double rating = widget.destination.userRating ?? 0.0;
+        double rating = destination.userRating ?? 0.0;
         return AlertDialog(
           title: const Text("Rate this Destination"),
           content: RatingBar.builder(
@@ -200,12 +212,12 @@ class _DestinationPage extends State<DestinationPage> {
               onPressed: () {
                 Navigator.of(dialogContext).pop();
                 // Update the destination rating in the state and database
-                widget.destinationBloc.add(
-                  UpdateDestinationRating(
-                    destinationId: widget.destination.id,
-                    rating: rating,
-                  ),
-                );
+                context.read<DestinationBloc>().add(
+                      UpdateDestinationRating(
+                        destinationId: widget.destinationId,
+                        rating: rating,
+                      ),
+                    );
               },
             ),
           ],
@@ -234,7 +246,7 @@ class _DestinationPage extends State<DestinationPage> {
                         bottom: Radius.circular(20),
                       ),
                       image: DecorationImage(
-                        image: NetworkImage(widget.destination.coverImage),
+                        image: NetworkImage(destination.coverImage),
                         fit: BoxFit.cover,
                       ),
                       boxShadow: [
@@ -288,7 +300,7 @@ class _DestinationPage extends State<DestinationPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.destination.name,
+                        destination.name,
                         style: Theme.of(context).textTheme.titleLarge,
                         overflow: TextOverflow.visible,
                       ),
@@ -299,7 +311,7 @@ class _DestinationPage extends State<DestinationPage> {
                           const SizedBox(width: 5),
                           Flexible(
                             child: Text(
-                              widget.destination.address,
+                              destination.address,
                               style: Theme.of(context).textTheme.bodySmall,
                               maxLines: 2,
                             ),
@@ -320,7 +332,7 @@ class _DestinationPage extends State<DestinationPage> {
                     ),
                     const SizedBox(width: 5),
                     Text(
-                      widget.destination.aveRating.toString(),
+                      destination.aveRating.toString(),
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
@@ -333,7 +345,7 @@ class _DestinationPage extends State<DestinationPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.destination.description,
+                  destination.description,
                   textAlign: TextAlign.justify,
                   maxLines: isDescriptionExpanded ? null : 4,
                   overflow: isDescriptionExpanded
@@ -357,7 +369,7 @@ class _DestinationPage extends State<DestinationPage> {
             ),
             const SizedBox(height: 5),
             //menu
-            if (widget.destination.menu != null)
+            if (destination.menu != null)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -379,9 +391,9 @@ class _DestinationPage extends State<DestinationPage> {
                       mainAxisSpacing: 10,
                       childAspectRatio: 2,
                     ),
-                    itemCount: widget.destination.menu!.items.length,
+                    itemCount: destination.menu!.items.length,
                     itemBuilder: (context, index) {
-                      final menuItem = widget.destination.menu!.items[index];
+                      final menuItem = destination.menu!.items[index];
                       return Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
@@ -455,11 +467,11 @@ class _DestinationPage extends State<DestinationPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: List.generate(
-                  widget.destination.images!.length > 4
+                  destination.images!.length > 4
                       ? 4
-                      : widget.destination.images!.length,
+                      : destination.images!.length,
                   (index) {
-                    if (index == 3 && widget.destination.images!.length > 4) {
+                    if (index == 3 && destination.images!.length > 4) {
                       return GestureDetector(
                         onTap: () {
                           // Show all images in a grid view modal
@@ -474,14 +486,14 @@ class _DestinationPage extends State<DestinationPage> {
                                     const SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 2,
                                 ),
-                                itemCount: widget.destination.images?.length,
+                                itemCount: destination.images?.length,
                                 itemBuilder: (context, index) {
                                   return Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(10),
                                       child: Image.network(
-                                        widget.destination.images?[index],
+                                        destination.images?[index],
                                         fit: BoxFit.cover,
                                       ),
                                     ),
@@ -497,7 +509,7 @@ class _DestinationPage extends State<DestinationPage> {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(25),
                               child: Image.network(
-                                widget.destination.images?[index],
+                                destination.images?[index],
                                 fit: BoxFit.cover,
                                 width: 80,
                                 height: 80,
@@ -506,7 +518,7 @@ class _DestinationPage extends State<DestinationPage> {
                             Container(
                               color: Colors.black.withOpacity(0.5),
                               child: Text(
-                                "+${widget.destination.images!.length - 4}",
+                                "+${destination.images!.length - 4}",
                                 style: const TextStyle(color: Colors.white),
                               ),
                             ),
@@ -529,7 +541,7 @@ class _DestinationPage extends State<DestinationPage> {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: Image.network(
-                                  widget.destination.images?[index],
+                                  destination.images?[index],
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -539,7 +551,7 @@ class _DestinationPage extends State<DestinationPage> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(25),
                           child: Image.network(
-                            widget.destination.images?[index],
+                            destination.images?[index],
                             fit: BoxFit.cover,
                             width: 80,
                             height: 80,
@@ -563,7 +575,7 @@ class _DestinationPage extends State<DestinationPage> {
                   size: 14,
                 ),
                 Text(
-                  widget.destination.aveRating.toString(),
+                  destination.aveRating.toString(),
                   style: const TextStyle(
                     fontSize: 12,
                   ),
@@ -584,7 +596,7 @@ class _DestinationPage extends State<DestinationPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      "Estimated distance: ${widget.destination.distance}",
+                      "Estimated distance: ${destination.distance}",
                       style: Theme.of(context).textTheme.titleLarge!.copyWith(
                             color: Theme.of(context).colorScheme.primary,
                           ),
@@ -619,8 +631,8 @@ class _DestinationPage extends State<DestinationPage> {
             ),
             const SizedBox(height: 15),
             Distance(
-                currentLoc: widget.state2.locationAddress,
-                destinationLoc: widget.destination.address),
+                currentLoc: locationAddress,
+                destinationLoc: destination.address),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
@@ -643,7 +655,7 @@ class _DestinationPage extends State<DestinationPage> {
                   );
                 } else {
                   final Uri url = Uri.parse(
-                      'https://www.google.com/maps/dir/?api=1&origin=${widget.state2.location.latitude},${widget.state2.location.longitude}&destination=${widget.destination.locationCoords.latitude},${widget.destination.locationCoords.longitude}&travelmode=driving');
+                      'https://www.google.com/maps/dir/?api=1&origin=${startLocation.latitude},${startLocation.longitude}&destination=${endLocation.latitude},${endLocation.longitude}&travelmode=driving');
 
                   if (await canLaunchUrl(url)) {
                     await launchUrl(url);

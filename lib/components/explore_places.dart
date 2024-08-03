@@ -1,7 +1,9 @@
+import 'package:destination_repository/destination_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:zc_tour_app/components/destination_details.dart';
+import 'package:zc_tour_app/blocs/authentication_bloc/authentication_bloc.dart';
+import 'package:zc_tour_app/components/destination_detail.dart';
 import 'package:zc_tour_app/screens/home/bloc/destination_bloc/destination_bloc.dart';
 
 class ExplorePlaces extends StatelessWidget {
@@ -35,9 +37,14 @@ class ExplorePlaces extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => DestinationPage(
-                              destination: state.exploreDestinations[index],
-                              state2: state,
+                            builder: (context) => BlocProvider<DestinationBloc>(
+                              create: (context) => DestinationBloc(
+                                FirebaseDestinationRepo(),
+                                BlocProvider.of<AuthenticationBloc>(context),
+                              ),
+                              child: DestinationDetail(
+                                destinationId: state.destinations[index].id,
+                              ),
                             ),
                           ),
                         );
@@ -50,7 +57,7 @@ class ExplorePlaces extends StatelessWidget {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(12),
                               child: Image.network(
-                                state.exploreDestinations[index].coverImage,
+                                state.destinations[index].coverImage,
                                 width: double.maxFinite,
                                 fit: BoxFit.cover,
                                 height: 150,
@@ -61,7 +68,7 @@ class ExplorePlaces extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    state.exploreDestinations[index].name,
+                                    state.destinations[index].name,
                                     style: const TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold,
@@ -77,7 +84,7 @@ class ExplorePlaces extends StatelessWidget {
                                   size: 14,
                                 ),
                                 Text(
-                                  state.exploreDestinations[index].aveRating
+                                  state.destinations[index].aveRating
                                       .toString(),
                                   style: const TextStyle(
                                     fontSize: 12,
@@ -96,7 +103,7 @@ class ExplorePlaces extends StatelessWidget {
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
-                                    state.exploreDestinations[index].address,
+                                    state.destinations[index].address,
                                     style: const TextStyle(
                                       fontSize: 12,
                                     ),
@@ -116,7 +123,7 @@ class ExplorePlaces extends StatelessWidget {
               separatorBuilder: (context, index) => const Padding(
                 padding: EdgeInsets.only(right: 10),
               ),
-              itemCount: state.exploreDestinations.take(5).length,
+              itemCount: state.destinations.take(5).length,
             ),
           );
         } else {

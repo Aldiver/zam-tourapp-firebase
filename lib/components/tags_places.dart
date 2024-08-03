@@ -1,13 +1,30 @@
-import 'package:destination_repository/destination_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:zc_tour_app/components/tagged_places.dart';
 import 'package:zc_tour_app/screens/home/bloc/destination_bloc/destination_bloc.dart';
 import 'package:zc_tour_app/utils/tags.dart';
+import 'package:destination_repository/destination_repository.dart';
 
 class TagsPlaces extends StatelessWidget {
   final DestinationSuccess state2;
+  final List<Destination> mountainDestinations;
+  final List<Destination> beachDestinations;
+  final List<Destination> forestDestinations;
+  final List<Destination> cityDestinations;
+  final List<Destination> foodDestinations;
+  final List<Destination> bedsDestinations;
+  final List<Destination> exploreDestinations;
 
-  const TagsPlaces({required this.state2, super.key});
+  const TagsPlaces({
+    required this.state2,
+    required this.mountainDestinations,
+    required this.beachDestinations,
+    required this.forestDestinations,
+    required this.cityDestinations,
+    required this.foodDestinations,
+    required this.bedsDestinations,
+    required this.exploreDestinations,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,26 +39,25 @@ class TagsPlaces extends StatelessWidget {
 
           switch (tag.name) {
             case 'Mountain':
-              filteredDestinations = state2.mountainDestinations;
+              filteredDestinations = mountainDestinations;
               break;
             case 'Beach':
-              filteredDestinations = state2.beachDestinations;
+              filteredDestinations = beachDestinations;
               break;
             case 'Forest':
-              filteredDestinations = state2.forestDestinations;
+              filteredDestinations = forestDestinations;
               break;
             case 'City':
-              filteredDestinations = state2.cityDestinations;
+              filteredDestinations = cityDestinations;
               break;
             case 'Food':
-              filteredDestinations = state2.foodDestinations;
+              filteredDestinations = foodDestinations;
               break;
             case 'Beds':
-              filteredDestinations = state2.bedsDestinations;
+              filteredDestinations = bedsDestinations;
               break;
             default:
-              // Default to explore destinations
-              filteredDestinations = state2.exploreDestinations;
+              filteredDestinations = exploreDestinations;
           }
 
           return GestureDetector(
@@ -49,7 +65,11 @@ class TagsPlaces extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => TaggedPlaces(destinationsFiltered: filteredDestinations, title: tag.name, state2: state2,),
+                  builder: (context) => TaggedPlaces(
+                    destinationsFiltered: filteredDestinations,
+                    title: tag.name,
+                    state2: state2,
+                  ),
                 ),
               );
             },
@@ -60,11 +80,13 @@ class TagsPlaces extends StatelessWidget {
               ),
               backgroundColor: Colors.white,
               elevation: 0.4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
             ),
           );
         },
-        separatorBuilder: (context, index) => const Padding(padding: EdgeInsets.only(right: 10)),
+        separatorBuilder: (context, index) =>
+            const Padding(padding: EdgeInsets.only(right: 10)),
         itemCount: tagsPlaces.length,
       ),
     );

@@ -4,6 +4,7 @@ import 'package:user_repository/user_repository.dart';
 import 'app_view.dart';
 import 'blocs/authentication_bloc/authentication_bloc.dart';
 
+// ignore: camel_case_types
 class zc_tour_app extends StatelessWidget {
   final UserRepository userRepository;
   const zc_tour_app(this.userRepository, {super.key});
