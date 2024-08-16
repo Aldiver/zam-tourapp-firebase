@@ -8,9 +8,7 @@ part 'sign_in_state.dart';
 class SignInBloc extends Bloc<SignInEvent, SignInState> {
   final UserRepository _userRepository;
 
-  SignInBloc(
-    this._userRepository
-  ) : super(SignInInitial()) {
+  SignInBloc(this._userRepository) : super(SignInInitial()) {
     on<SignInRequired>((event, emit) async {
       emit(SignInLoading());
       try {
@@ -19,7 +17,17 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         emit(SignInFailure());
       }
     });
-    
-    on<SignOutRequired>( (event, emit) async => await _userRepository.logOut());
+
+    on<SignOutRequired>((event, emit) async => await _userRepository.logOut());
+
+    on<SignInWithGoogleRequired>((event, emit) async {
+      emit(SignInLoading());
+      try {
+        await _userRepository.signInWithGoogle();
+        // emit(SignInSuccess());
+      } catch (e) {
+        emit(SignInFailure());
+      }
+    });
   }
 }

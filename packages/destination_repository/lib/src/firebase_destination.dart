@@ -13,7 +13,7 @@ class FirebaseDestinationRepo implements DestinationRepo {
   Future<List<Destination>> getDestinations(String userId) async {
     try {
       final destinationDocs = await destinationCollection.get();
-      // final ratingDocs = await ratingCollection.get();
+      final ratingDocs = await ratingCollection.get();
       final menuDocs = await menuCollection.get();
 
       final destinations = destinationDocs.docs
@@ -21,13 +21,15 @@ class FirebaseDestinationRepo implements DestinationRepo {
               Destination.fromEntity(DestinationEntity.fromDocument(e.data())))
           .toList();
 
-      // // Handle ratings
-      // List<RatingEntity> ratings = [];
-      // if (ratingDocs.docs.isNotEmpty) {
-      //   ratings = ratingDocs.docs
-      //       .map((e) => RatingEntity.fromDocument(e.data()))
-      //       .toList();
-      // }
+      Map<String, RatingEntity> ratingsMap = {};
+      if (ratingDocs.docs.isNotEmpty) {
+        for (var doc in ratingDocs.docs) {
+          final rating = RatingEntity.fromDocument(doc.data());
+          final docId =
+              '${rating.userId}_${rating.destinationId}'; // Create the key
+          ratingsMap[docId] = rating;
+        }
+      }
 
       // Handle menus
       final menus =
@@ -35,29 +37,10 @@ class FirebaseDestinationRepo implements DestinationRepo {
 
       // Map ratings and menus to their respective destinations
       for (var destination in destinations) {
-        // final destinationRatings = ratings
-        //     .where((rating) => rating.destinationId == destination.id)
-        //     .toList();
+        final ratingKey = '${userId}_${destination.id}';
+        destination.userRating = ratingsMap[ratingKey]?.rating ?? 0.0;
 
-        // if (destinationRatings.isNotEmpty) {
-        //   destination.aveRating = destinationRatings
-        //           .map((rating) => rating.rating)
-        //           .reduce((a, b) => a + b) /
-        //       destinationRatings.length;
-        //   destination.rating = destinationRatings.length;
-        // } else {
-        //   destination.aveRating = 0;
-        //   destination.rating = 0;
-        // }
-
-        // Assuming `userId` is available in your context to get `userRating`
-        // final userRating = destinationRatings.firstWhere(
-        //     (rating) => rating.userId == userId,
-        //     orElse: () => RatingEntity.empty);
-        // destination.userRating = userRating.rating;
-        // destination.ratingId = userRating.id;
-        // log("Updated Ratings Kimene ${destination.id} -> ${destination.userRating}");
-
+        // Menus
         final matchedMenu = menus.firstWhere(
           (menu) => menu.destinationId == destination.id,
           orElse: () => MenuEntity.empty(),

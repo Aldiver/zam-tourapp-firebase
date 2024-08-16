@@ -91,6 +91,6 @@ class Destination {
 
   @override
   String toString() {
-    return 'Destination{id: $id, name: $name, description: $description, coverImage: $coverImage, images: $images, tags: $tags, isFoodServiceEstablishment: $isFoodServiceEstablishment, rating: $rating, address: $address, locationCoords: $locationCoords}';
+    return 'Destination{id: $id, name: $name, description: $description, coverImage: $coverImage, images: $images, tags: $tags, isFoodServiceEstablishment: $isFoodServiceEstablishment, rating: $rating, average: $aveRating ,address: $address, locationCoords: $locationCoords}';
   }
 }

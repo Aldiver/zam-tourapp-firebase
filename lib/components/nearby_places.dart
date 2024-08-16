@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zc_tour_app/components/destination_details.dart';
+import 'package:zc_tour_app/components/destination_detail.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zc_tour_app/components/distance.dart';
 import 'package:zc_tour_app/screens/home/bloc/destination_bloc/destination_bloc.dart';
@@ -12,7 +12,6 @@ class NearbyPlaces extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<DestinationBloc, DestinationState>(
       builder: (context, state) {
-        DestinationBloc destinationBloc = context.read<DestinationBloc>();
         if (state is DestinationLoading) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is DestinationSuccess) {
@@ -34,14 +33,14 @@ class NearbyPlaces extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     onTap: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DestinationPage(
-                              destination: nearbyDestinations[index],
-                              state2: state,
-                              destinationBloc: destinationBloc,
-                            ),
-                          ));
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DestinationDetail(
+                            destination: nearbyDestinations[index],
+                            locationState: state,
+                          ),
+                        ),
+                      );
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),

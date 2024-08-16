@@ -10,4 +10,6 @@ abstract class UserRepository {
   Future<void> signIn(String user, String password);
 
   Future<void> logOut();
+
+  Future<MyUser> signInWithGoogle();
 }

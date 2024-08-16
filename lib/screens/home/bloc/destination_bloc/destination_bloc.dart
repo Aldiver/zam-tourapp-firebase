@@ -86,6 +86,7 @@ class DestinationBloc extends Bloc<DestinationEvent, DestinationState> {
       try {
         await _destinationRepository.updateRating(
             event.destinationId, event.rating, user!.userId);
+        await Future.delayed(const Duration(milliseconds: 300));
         add(FetchDestinations());
       } catch (e) {
         log("Error updating destination rating: $e");

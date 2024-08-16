@@ -1,8 +1,6 @@
-import 'package:destination_repository/destination_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:zc_tour_app/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:zc_tour_app/components/destination_detail.dart';
 import 'package:zc_tour_app/screens/home/bloc/destination_bloc/destination_bloc.dart';
 
@@ -37,14 +35,9 @@ class ExplorePlaces extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => BlocProvider<DestinationBloc>(
-                              create: (context) => DestinationBloc(
-                                FirebaseDestinationRepo(),
-                                BlocProvider.of<AuthenticationBloc>(context),
-                              ),
-                              child: DestinationDetail(
-                                destinationId: state.destinations[index].id,
-                              ),
+                            builder: (context) => DestinationDetail(
+                              destination: state.destinations[index],
+                              locationState: state,
                             ),
                           ),
                         );

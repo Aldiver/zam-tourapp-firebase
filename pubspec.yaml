@@ -60,6 +60,8 @@ dependencies:
   flutter_native_splash: ^2.4.0
   flutter_rating_bar: ^4.0.1
   provider: ^6.1.2
+  google_sign_in: ^6.2.1
+  timeline_tile:
 
   
 

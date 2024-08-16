@@ -11,11 +11,14 @@ class zc_tour_app extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider<AuthenticationBloc>(
-      create: (context) => AuthenticationBloc(
-        userRepository: userRepository
+    return RepositoryProvider<UserRepository>.value(
+      value: userRepository,
+      child: BlocProvider<AuthenticationBloc>(
+        create: (context) => AuthenticationBloc(
+          userRepository: userRepository,
+        ),
+        child: const zc_tour_appView(),
       ),
-      child: const zc_tour_appView(),
     );
   }
 }
