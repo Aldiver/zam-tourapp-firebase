@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:zc_tour_app/components/banner_image_widget.dart';
 import 'package:zc_tour_app/components/explore_places.dart';
+import 'package:zc_tour_app/components/itineraries_list.dart';
 import 'package:zc_tour_app/components/itinerary_page.dart';
 import 'package:zc_tour_app/components/nearby_places.dart';
 import 'package:zc_tour_app/components/tagged_places.dart';
@@ -101,9 +102,10 @@ class HomeScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ItineraryPage(
-                            itinerary: exploreDestinations,
-                          ),
+                          builder: (context) => const ItinerariesList(),
+                          // ItineraryPage(
+                          //   itinerary: exploreDestinations,
+                          // ),
                         ),
                       );
                     },

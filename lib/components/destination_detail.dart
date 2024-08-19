@@ -175,20 +175,23 @@ class _DestinationDetailState extends State<DestinationDetail> {
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: const Text("Rate this Destination"),
-          content: RatingBar.builder(
-            initialRating: rating,
-            minRating: 0,
-            direction: Axis.horizontal,
-            allowHalfRating: true,
-            itemCount: 5,
-            itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-            itemBuilder: (context, _) => const Icon(
-              Icons.star,
-              color: Colors.amber,
+          content: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: RatingBar.builder(
+              initialRating: rating,
+              minRating: 0,
+              direction: Axis.horizontal,
+              allowHalfRating: true,
+              itemCount: 5,
+              itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+              itemBuilder: (context, _) => const Icon(
+                Icons.star,
+                color: Colors.amber,
+              ),
+              onRatingUpdate: (newRating) {
+                rating = newRating;
+              },
             ),
-            onRatingUpdate: (newRating) {
-              rating = newRating;
-            },
           ),
           actions: [
             TextButton(
@@ -208,8 +211,6 @@ class _DestinationDetailState extends State<DestinationDetail> {
                         rating: rating,
                       ),
                     );
-
-                // Navigator.of(dialogContext).pop();
               },
             ),
           ],
@@ -420,11 +421,11 @@ class _DestinationDetailState extends State<DestinationDetail> {
                                 ),
                               ],
                             ),
-                            child: IntrinsicHeight(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Text(
                                     menuItem.menuItem,
                                     style: const TextStyle(
                                       fontSize: 16,
@@ -433,16 +434,16 @@ class _DestinationDetailState extends State<DestinationDetail> {
                                     maxLines: 2,
                                     overflow: TextOverflow.visible,
                                   ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    "P ${menuItem.price.toString()}",
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey,
-                                    ),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  "P ${menuItem.price.toString()}",
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey,
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           );
                         },
@@ -478,103 +479,106 @@ class _DestinationDetailState extends State<DestinationDetail> {
                 //Images
                 SizedBox(
                   height: 80,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: List.generate(
-                      destination.images!.length > 4
-                          ? 4
-                          : destination.images!.length,
-                      (index) {
-                        if (index == 3 && destination.images!.length > 4) {
-                          return GestureDetector(
-                            onTap: () {
-                              // Show all images in a grid view modal
-                              showDialog(
-                                context: context,
-                                barrierColor:
-                                    const Color.fromARGB(199, 255, 255, 255),
-                                builder: (context) => Dialog(
-                                  backgroundColor: Colors.transparent,
-                                  child: GridView.builder(
-                                    gridDelegate:
-                                        const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                    ),
-                                    itemCount: destination.images?.length,
-                                    itemBuilder: (context, index) {
-                                      return Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          child: Image.network(
-                                            destination.images?[index],
-                                            fit: BoxFit.cover,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: List.generate(
+                        destination.images!.length > 4
+                            ? 4
+                            : destination.images!.length,
+                        (index) {
+                          if (index == 3 && destination.images!.length > 4) {
+                            return GestureDetector(
+                              onTap: () {
+                                // Show all images in a grid view modal
+                                showDialog(
+                                  context: context,
+                                  barrierColor:
+                                      const Color.fromARGB(199, 255, 255, 255),
+                                  builder: (context) => Dialog(
+                                    backgroundColor: Colors.transparent,
+                                    child: GridView.builder(
+                                      gridDelegate:
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                      ),
+                                      itemCount: destination.images?.length,
+                                      itemBuilder: (context, index) {
+                                        return Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            child: Image.network(
+                                              destination.images?[index],
+                                              fit: BoxFit.cover,
+                                            ),
                                           ),
-                                        ),
-                                      );
-                                    },
+                                        );
+                                      },
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(25),
-                                  child: Image.network(
-                                    destination.images?[index],
-                                    fit: BoxFit.cover,
-                                    width: 80,
-                                    height: 80,
-                                  ),
-                                ),
-                                Container(
-                                  color: Colors.black.withOpacity(0.5),
-                                  child: Text(
-                                    "+${destination.images!.length - 4}",
-                                    style: const TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              // Show image preview in a modal
-                              showDialog(
-                                context: context,
-                                barrierColor:
-                                    const Color.fromARGB(50, 255, 255, 255),
-                                builder: (context) => Dialog(
-                                  backgroundColor: Colors.transparent,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
+                                );
+                              },
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(25),
                                     child: Image.network(
                                       destination.images?[index],
                                       fit: BoxFit.cover,
+                                      width: 80,
+                                      height: 80,
                                     ),
                                   ),
+                                  Container(
+                                    color: Colors.black.withOpacity(0.5),
+                                    child: Text(
+                                      "+${destination.images!.length - 4}",
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                // Show image preview in a modal
+                                showDialog(
+                                  context: context,
+                                  barrierColor:
+                                      const Color.fromARGB(50, 255, 255, 255),
+                                  builder: (context) => Dialog(
+                                    backgroundColor: Colors.transparent,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Image.network(
+                                        destination.images?[index],
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(25),
+                                child: Image.network(
+                                  destination.images?[index],
+                                  fit: BoxFit.cover,
+                                  width: 80,
+                                  height: 80,
                                 ),
-                              );
-                            },
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(25),
-                              child: Image.network(
-                                destination.images?[index],
-                                fit: BoxFit.cover,
-                                width: 80,
-                                height: 80,
                               ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),

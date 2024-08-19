@@ -46,6 +46,8 @@ class DestinationBloc extends Bloc<DestinationEvent, DestinationState> {
         final destinations =
             await _destinationRepository.getDestinations(user!.userId);
 
+        final itineraries = await _destinationRepository.getItineraries();
+
         // Get user's current location for nearby destinations
         Position position = await Geolocator.getCurrentPosition(
             desiredAccuracy: LocationAccuracy.high);
@@ -75,7 +77,8 @@ class DestinationBloc extends Bloc<DestinationEvent, DestinationState> {
 
         GeoPoint location = GeoPoint(position.latitude, position.longitude);
 
-        emit(DestinationSuccess(destinations, location, locationAddress));
+        emit(DestinationSuccess(
+            destinations, location, locationAddress, itineraries));
       } catch (e) {
         log("Error fetching location: $e");
         emit(DestinationFailure());
@@ -86,7 +89,7 @@ class DestinationBloc extends Bloc<DestinationEvent, DestinationState> {
       try {
         await _destinationRepository.updateRating(
             event.destinationId, event.rating, user!.userId);
-        await Future.delayed(const Duration(milliseconds: 300));
+        await Future.delayed(const Duration(milliseconds: 100));
         add(FetchDestinations());
       } catch (e) {
         log("Error updating destination rating: $e");

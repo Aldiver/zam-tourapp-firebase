@@ -2,12 +2,16 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:destination_repository/destination_repository.dart';
+import 'package:destination_repository/src/entities/entities.dart';
+import 'package:destination_repository/src/models/itinerary.dart';
 
 class FirebaseDestinationRepo implements DestinationRepo {
   final destinationCollection =
       FirebaseFirestore.instance.collection('destinations');
   final ratingCollection = FirebaseFirestore.instance.collection('ratings');
   final menuCollection = FirebaseFirestore.instance.collection('menus');
+  final itineraryCollection =
+      FirebaseFirestore.instance.collection('itineraries');
 
   @override
   Future<List<Destination>> getDestinations(String userId) async {
@@ -48,7 +52,6 @@ class FirebaseDestinationRepo implements DestinationRepo {
 
         destination.menu = Menu.fromEntity(matchedMenu);
       }
-
       return destinations;
     } catch (e) {
       log(e.toString());
@@ -66,6 +69,21 @@ class FirebaseDestinationRepo implements DestinationRepo {
         'destinationId': destinationId,
         'rating': userRating,
       }, SetOptions(merge: true));
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<Itinerary>> getItineraries() async {
+    try {
+      final itineraryDocs = await itineraryCollection.get();
+      final itineraries = itineraryDocs.docs
+          .map((e) => Itinerary.fromEntity(
+              ItineraryEntity.fromDocument(e.data(), e.id)))
+          .toList();
+      return itineraries;
     } catch (e) {
       log(e.toString());
       rethrow;

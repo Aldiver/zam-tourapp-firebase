@@ -115,9 +115,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               },
                             ),
                             const SizedBox(height: 20.0),
-                            if (signInRequired) const CircularProgressIndicator(),
-                            if (!signInRequired)
-                              _buildSignInButton(context),
+                            if (signInRequired)
+                              const CircularProgressIndicator(),
+                            if (!signInRequired) _buildSignInButton(context),
                             const SizedBox(height: 15.0),
                             _buildGoogleSignInButton(context),
                             const SizedBox(height: 15.0),
@@ -235,8 +235,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         context.read<SignInBloc>().add(SignInWithGoogleRequired());
       },
       child: Container(
-        width: MediaQuery.of(context).size.width,
-        padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 30.0),
+        width: MediaQuery.of(context).size.width * .9,
+        padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
         decoration: BoxDecoration(
           color: const Color(0xFFFFFFFF),
           borderRadius: BorderRadius.circular(30),
@@ -247,6 +247,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         ),
         child: Center(
           child: Row(
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SvgPicture.asset(
@@ -262,6 +263,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   fontSize: 22.0,
                   fontWeight: FontWeight.w500,
                 ),
+                overflow: TextOverflow.ellipsis, // Handles text overflow
+                textAlign: TextAlign.center, // Centers the text
               ),
             ],
           ),

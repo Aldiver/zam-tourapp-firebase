@@ -22,7 +22,7 @@ class NearbyPlaces extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: SizedBox(
-                height: 135,
+                height: 160,
                 width: double.maxFinite,
                 child: Card(
                   elevation: 0.4,
