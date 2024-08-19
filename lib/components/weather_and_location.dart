@@ -82,7 +82,10 @@ class WeatherAndLocation extends StatelessWidget {
                 // ),
                 );
           } else if (state is WeatherError) {
-            return Text(state.message);
+            // return Text(state.message);
+            return const Center(
+              child: Text('There was a problem fetching the weather data.'),
+            );
           } else {
             return const Text('Press button to fetch weather');
           }
